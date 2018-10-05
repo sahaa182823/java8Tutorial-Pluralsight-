@@ -27,7 +27,8 @@ public class Main {
                 "Line 5 5 5 5 5"
         };
 
-        try(FileSystem zipFs = openZip(Paths.get("myData.zip"))) {
+        try(FileSystem zipFs = openZip(Paths.get("myData.zip")))  // since we opened openZip() so try with resource will help to close this
+        {
             copyToZip(zipFs);
             writeToFileInZip1(zipFs, data);
             writeToFileInZip2(zipFs, data);
@@ -38,10 +39,10 @@ public class Main {
 
     private static FileSystem openZip(Path zipPath) throws IOException, URISyntaxException {
         Map<String, String> providerProps = new HashMap<>();
-        providerProps.put("create", "true");
+        providerProps.put("create", "true"); // specify the properties we want in .Zip file
 
-        URI zipUri = new URI("jar:file", zipPath.toUri().getPath(), null);
-        FileSystem zipFs = FileSystems.newFileSystem(zipUri, providerProps);
+        URI zipUri = new URI("jar:file", zipPath.toUri().getPath(), null);  // got the URI for the .zip file
+        FileSystem zipFs = FileSystems.newFileSystem(zipUri, providerProps);  // created the .zip file
 
         return zipFs;
     }
@@ -54,7 +55,8 @@ public class Main {
         Files.copy(sourceFile, destFile, StandardCopyOption.REPLACE_EXISTING);
     }
 
-    private static void writeToFileInZip1(FileSystem zipFs, String[] data) throws IOException {
+    private static void writeToFileInZip1(FileSystem zipFs, String[] data) throws IOException // this is the traditional way of writing using BufferedReader
+    {
         try(BufferedWriter writer = Files.newBufferedWriter(zipFs.getPath("/newFile1.txt"))) {
             for(String d:data) {
                 writer.write(d);
@@ -63,7 +65,8 @@ public class Main {
         }
     }
 
-    private static void writeToFileInZip2(FileSystem zipFs, String[] data) throws IOException {
+    private static void writeToFileInZip2(FileSystem zipFs, String[] data) throws IOException // this is the new way to write using files.write
+    {
         Files.write(zipFs.getPath("/newFile2.txt"), Arrays.asList(data),
                 Charset.defaultCharset(), StandardOpenOption.CREATE);
     }
